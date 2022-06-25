@@ -26,7 +26,7 @@ CREATE TABLE `our_u_options` (
 --
 
 CREATE TABLE `our_u_roles` (
-    `id` smallint(5) UNSIGNED NOT NULL,
+    `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
     `role` varchar(30) NOT NULL,
     `description` tinytext NOT NULL,
     `level` tinyint(3) UNSIGNED NOT NULL
@@ -54,7 +54,7 @@ CREATE TABLE `our_u_tokens` (
 --
 
 CREATE TABLE `our_u_users` (
-    `id` bigint(20) UNSIGNED NOT NULL,
+    `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     `login` varchar(30) NOT NULL,
     `password` varbinary(32) NOT NULL,
     `email` tinytext NOT NULL,
@@ -77,6 +77,35 @@ CREATE TABLE `our_u_users_roles` (
     `end_time` timestamp NULL DEFAULT NULL,
     `work_time` varchar(255) NOT NULL DEFAULT 'INF' COMMENT 'sql time INTERVAL / "INF"',
     `action_id` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `p_posts`
+--
+
+CREATE TABLE `p_posts` (
+     `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+     `user_id` bigint(20) UNSIGNED NOT NULL,
+     `parent_id` bigint(20) UNSIGNED NULL DEFAULT NULL,
+     `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     `lang` tinytext NOT NULL,
+     `text` MEDIUMTEXT NOT NULL,
+     `bugs` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `features`bigint(20) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `p_bugs_features`
+--
+
+CREATE TABLE `p_bugs_features` (
+   `user_id` bigint(20) UNSIGNED NOT NULL,
+   `post_id` bigint(20) UNSIGNED NOT NULL,
+   `type` tinyint NOT NULL COMMENT '1 - feature, -1 - bug'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -115,19 +144,20 @@ ALTER TABLE `our_u_users_roles`
     ADD KEY `role_id_idx` (`role_id`);
 
 --
--- AUTO_INCREMENT для сохранённых таблиц
+-- Индексы таблицы `p_posts`
 --
+ALTER TABLE `p_posts`
+    ADD PRIMARY KEY (`id`),
+    ADD KEY `user_id_idx` (`user_id`),
+    ADD KEY `parent_id_idx` (`parent_id`);
 
 --
--- AUTO_INCREMENT для таблицы `our_u_roles`
+-- Индексы таблицы `p_bugs_features`
 --
-ALTER TABLE `our_u_roles`
-    MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT для таблицы `our_u_users`
---
-ALTER TABLE `our_u_users`
-    MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `p_bugs_features`
+    ADD PRIMARY KEY (`user_id`, `parent_id`),
+    ADD KEY `user_id_idx` (`user_id`),
+    ADD KEY `parent_id_idx` (`parent_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `our_u_options`
@@ -147,6 +177,21 @@ ALTER TABLE `our_u_tokens`
 ALTER TABLE `our_u_users_roles`
     ADD CONSTRAINT `role_id_key` FOREIGN KEY (`role_id`) REFERENCES `our_u_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `user_id_key` FOREIGN KEY (`user_id`) REFERENCES `our_u_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+--
+-- Ограничения внешнего ключа таблицы `p_posts`
+--
+ALTER TABLE `p_posts`
+    ADD CONSTRAINT `post_user_id_key` FOREIGN KEY (`user_id`) REFERENCES `our_u_users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    ADD CONSTRAINT `post_parent_id_key` FOREIGN KEY (`parent_id`) REFERENCES `p_posts` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `p_posts`
+--
+ALTER TABLE `p_bugs_features`
+    ADD CONSTRAINT `fb_user_id_key` FOREIGN KEY (`user_id`) REFERENCES `our_u_users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    ADD CONSTRAINT `fb_post_id_key` FOREIGN KEY (`post_id`) REFERENCES `p_posts` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
