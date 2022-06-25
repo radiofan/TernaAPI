@@ -1,6 +1,99 @@
 <?php
 
 /**
+ * событие регистрации пользователя
+ * @param $_POST = ['login' => string, 'password' => string, 'email' => string]
+ * @return array ['user_id' => int]
+ * ['code' => 400, 'error' => string]
+ */
+function action_register(){
+	if(!isset($_POST['login'], $_POST['password'], $_POST['email']))
+		return ['code' => 400, 'error' => STR_EMPTY_DATA];
+	global $USER;
+	if($USER->get_id())
+		return ['user_id' => $USER->get_id()];
+	
+	$new_user_id = rad_user::create_new_user($_POST['login'], $_POST['password'], $_POST['email'], rad_user_roles::USER);
+	
+	$ret = '';
+	$status = 0;
+	switch($new_user_id){
+		case -1:
+			return ['code' => 400, 'error' => STR_ACTION_LOGIN_1];
+			break;
+		case -2:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_2];
+			break;
+		case -3:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_3];
+			break;
+		case -4:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_4];
+			break;
+		case -5:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_5];
+			break;
+		case -6:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_6];
+			break;
+		case -7:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_7];
+			break;
+		case -10:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_71];
+			break;
+		case -8:
+			throw new Exception(STR_ACTION_SIGNIN_8);
+			return ['code' => 400, 'error' => ''];
+			break;
+		case -9:
+			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_9];
+			break;
+		default:
+			break;
+	}
+	
+	//TODO переделать
+	send_verified_mail($new_user_id);
+	//$USER->user_logout();
+	$USER->load_user($new_user_id);
+	$ret = $USER->create_token('remember');
+	if($ret['status']){
+		return array('code' => 400, 'error' => STR_UNDEFINED_ERROR);
+	}else{
+		setcookie('sid', $ret['token'], 0, '/', null, USE_SSL, 1);
+	}
+	
+	//TODO привествие
+	return ['user_id' => $USER->get_id()];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
  * событие входа пользователя, если не ajax запрос и все прошло успешно, то редирктит на главную
  * @param $_POST = ['login' => string, 'password' => string]
  * @return bool|array [status => int, 'message' => string]
@@ -42,91 +135,6 @@ function action_login(){
 	}else{
 		redirect('/');
 	}
-}
-
-/**
- * событие регистрации пользователя
- * @param $_POST = ['login' => string, 'password' => string, 'email' => string]
- * @return false|array [status => int, 'message' => string]
- */
-function action_signin(){
-	if(!isset($_POST['login'], $_POST['password'], $_POST['email']))
-		return false;
-	global $USER, $ALERTS;
-	if($USER->get_id())
-		return false;
-	
-	$new_user_id = rad_user::create_new_user($_POST['login'], $_POST['password'], $_POST['email'], rad_user_roles::USER);
-	
-	$ret = '';
-	$status = 0;
-	switch($new_user_id){
-		case -1:
-			$ret = STR_ACTION_SIGNIN_1;
-			$status = 1;
-			break;
-		case -2:
-			$ret = STR_ACTION_SIGNIN_2;
-			$status = 1;
-			break;
-		case -3:
-			$ret = STR_ACTION_SIGNIN_3;
-			$status = 2;
-			break;
-		case -4:
-			$ret = STR_ACTION_SIGNIN_4;
-			$status = 2;
-			break;
-		case -5:
-			$ret = STR_ACTION_SIGNIN_5;
-			$status = 2;
-			break;
-		case -6:
-			$ret = STR_ACTION_SIGNIN_6;
-			$status = 3;
-			break;
-		case -7:
-			$ret = STR_ACTION_SIGNIN_7;
-			$status = 3;
-			break;
-		case -10:
-			$ret = STR_ACTION_SIGNIN_71;
-			$status = 3;
-			break;
-		case -8:
-			throw new Exception(STR_ACTION_SIGNIN_8);
-			break;
-		case -9:
-			$ret = STR_ACTION_SIGNIN_9;
-			$status = 4;
-			break;
-		default:
-			break;
-	}
-	
-	if($status){
-		if(!AJAX){
-			$ALERTS->add_alert($ret, 'danger');
-		}
-		return array('status' => $status, 'message' => $ret);
-	}
-	
-	//TODO переделать
-	send_verified_mail($new_user_id);
-	//$USER->user_logout();
-	$USER->load_user($new_user_id);
-	$ret = $USER->create_token();
-	if($ret['status']){
-		if(!AJAX){
-			$ALERTS->add_alert(STR_UNDEFINED_ERROR, 'danger');
-		}
-		return array('status' => 4, 'message' => STR_UNDEFINED_ERROR);
-	}else{
-		setcookie('sid', $ret['token'], 0, '/', null, USE_SSL, 1);
-	}
-	
-	//TODO привествие
-	return array('status' => 0, 'message' => STR_ACTION_SIGNIN_10);
 }
 
 /**

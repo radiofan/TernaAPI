@@ -5,6 +5,8 @@ header('Content-Type: text/html; charset=UTF-8');
 define('MAIN_DIR', __DIR__.'/');
 define('AJAX', true);
 require_once MAIN_DIR.'defines.php';
+//языковые константы, используются в событиях (actions)
+require_once MAIN_DIR.'langs/ru-lang.php';
 
 //подключаем функции из файлов includes/functions/*-functions.php
 require_once MAIN_DIR.'includes/functions/other-functions.php';
@@ -35,6 +37,17 @@ $USER = new rad_user();
 
 require_once MAIN_DIR.'includes/actions/actions.php';
 $ret = do_actions();
+if(isset($ret['code'])){
+	http_response_code($ret['code']);
+	$error = '';
+	if(isset($ret['error'])){
+		$error = esc_html($ret['error']);
+	}
+	die(json_encode(['error' => $error]));
+}else if(isset($ret['error'])){
+	http_response_code(400);
+	die(json_encode(['error' => $ret['error']]));
+}
 die(json_encode($ret));
 
 ?>

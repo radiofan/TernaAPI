@@ -14,17 +14,20 @@ for($i=0; $i<sizeof($files); $i++){
 //array($_REQUEST['action'][0] => result, $_REQUEST['action'][1] => result, ...)
 function do_actions(){
 	if(isset($_REQUEST['action'])){
-		$actions = $_REQUEST['action'];
-		if(!is_array($actions))
-			$actions = array($actions);
+		$action = $_REQUEST['action'];
+		if($action && is_array($action)){
+			$action = current($action);
+		}
 		$ret = array();
-		foreach($actions as $act){
-			if(function_exists('action_'.$act)){
-				$ret[$act] = call_user_func('action_'.$act);
-			}
+		if(function_exists('action_'.$action)){
+			$ret = call_user_func('action_'.$action);
+		}else{
+			$ret['error'] = 'Undefined method';
+			$ret['code'] = 404;
 		}
 		return $ret;
 	}
+	return null;
 }
 
 /**
