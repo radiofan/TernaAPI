@@ -38,10 +38,14 @@ $OPTIONS['referer_data'] = parse_url(empty($_SERVER['HTTP_REFERER']) ? '' : $_SE
 
 require_once MAIN_DIR.'includes/classes/user-class/03-user-class.php';
 $USER = new rad_user();
+require_once MAIN_DIR.'includes/classes/post-class.php';
 
+//header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Origin: http://localhost:3000');
 require_once MAIN_DIR.'includes/actions/actions.php';
+
 $ret = do_actions();
-header('Access-Control-Allow-Origin: *');
 
 if(isset($ret['code'])){
 	http_response_code($ret['code']);

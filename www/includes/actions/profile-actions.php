@@ -27,11 +27,10 @@ function action_profile(){
 		'bio' => esc_html($current_user->get_bio()),
 	];
 	
-	$bugs_features = $DB->getRow('SELECT SUM(bugs) AS all_bugs, SUM(features) AS all_features FROM p_posts WHERE user_id = ?i', $current_user->get_id());
+	$bugs_features = $DB->getRow('SELECT SUM(bugs) AS all_bugs, SUM(features) AS all_features, SUM(forks) AS all_forks FROM p_posts WHERE user_id = ?i', $current_user->get_id());
 	$ret['bugs'] = (int)$bugs_features['all_bugs'];
 	$ret['features'] = (int)$bugs_features['all_features'];
-	
-	$ret['forks'] = (int) $DB->getOne('SELECT COUNT(*) FROM p_posts WHERE parent_id = ?i', $current_user->get_id());
+	$ret['forks'] = (int)$bugs_features['all_forks'];
 	
 	return $ret;
 }

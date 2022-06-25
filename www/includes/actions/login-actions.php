@@ -61,7 +61,7 @@ function action_register(){
 	if($ret['status']){
 		return array('code' => 400, 'error' => STR_UNDEFINED_ERROR);
 	}else{
-		setcookie('sid', $ret['token'], 0, '/', null, USE_SSL, 1);
+		setcookie('sid', $ret['token'], ['expires' => 0, 'path' => '/', 'domain' => '', 'secure' => USE_SSL, 'httponly' => 0, 'samesite' => 'None']);
 	}
 	
 	//TODO привествие
@@ -94,7 +94,7 @@ function action_login(){
 		return ['code' => 400, 'error' => STR_UNDEFINED_ERROR];
 	}else{
 		$end_time = $type == 'session' ? 0 : $ret['date_end_token']->getTimestamp();
-		setcookie('sid', $ret['token'], $end_time, '/', '', USE_SSL, 1);
+		setcookie('sid', $ret['token'], ['expires' => $end_time, 'path' => '/', 'domain' => '', 'secure' => USE_SSL, 'httponly' => 0, 'samesite' => 'None']);
 	}
 	return ['user_id' => $USER->get_id()];
 }

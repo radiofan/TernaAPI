@@ -93,7 +93,8 @@ CREATE TABLE `p_posts` (
      `lang` tinytext NOT NULL,
      `text` MEDIUMTEXT NOT NULL,
      `bugs` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
-     `features`bigint(20) UNSIGNED NOT NULL DEFAULT 0
+     `forks` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+     `features` bigint(20) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -266,7 +267,8 @@ ALTER TABLE `p_tags_posts`
 
 INSERT INTO `our_u_roles` (`id`, `role`, `description`, `level`) VALUES
 (1, 'change_bio', 'Пользователь может менять свои данные', 1),
-(2, 'ignore_max_token_remember', 'Может создавать сколько угодно токенов входа', 100);
+(2, 'ignore_max_token_remember', 'Может создавать сколько угодно токенов входа', 100),
+(3, 'create_post', 'Может создавать посты', 1);
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

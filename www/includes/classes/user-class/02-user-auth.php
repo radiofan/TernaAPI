@@ -130,7 +130,7 @@ abstract class rad_user_auth extends rad_user_base{
 							$time_end = (clone $now_time)->add(new DateInterval($check_token_data['time_work']));
 							$DB->query('UPDATE `our_u_tokens` SET `time_end` = ?s WHERE `user_id` = ?i AND `token` = ?p', $time_end->format(DB_DATETIME_FORMAT), $user_id, '0x'.$hash);
 							if($type == 'remember')
-								setcookie('sid', $token, $time_end->getTimestamp(), '/', '', USE_SSL, 1);
+								setcookie('sid', $token, ['expires' => $time_end->getTimestamp(), 'path' => '/', 'domain' => '', 'secure' => USE_SSL, 'httponly' => 0, 'samesite' => 'None']);
 							//вход
 							$this->load_user($user_id);
 							return true;
