@@ -44,7 +44,7 @@ function action_register(){
 			break;
 		case -8:
 			throw new Exception(STR_ACTION_SIGNIN_8);
-			return ['code' => 400, 'error' => ''];
+			return ['code' => 400, 'error' => STR_UNDEFINED_ERROR];
 			break;
 		case -9:
 			return ['code' => 400, 'error' => STR_ACTION_SIGNIN_9];
@@ -69,73 +69,45 @@ function action_register(){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * событие входа пользователя, если не ajax запрос и все прошло успешно, то редирктит на главную
- * @param $_POST = ['login' => string, 'password' => string]
- * @return bool|array [status => int, 'message' => string]
+ * @param $_POST = ['loginemail' => string, 'password' => string]
+ * @return array ['user_id' => int]
+ * ['code' => 400, 'error' => string]
  */
 function action_login(){
-	if(!isset($_POST['login'], $_POST['password']))
-		return false;
+	if(!isset($_POST['loginemail'], $_POST['password']))
+		return ['code' => 400, 'error' => STR_EMPTY_DATA];
 
-	global $USER, $ALERTS;
+	global $USER;
 
 	if($USER->get_id())
-		return true;
-	if(!$USER->load_by_loginpass($_POST['login'], $_POST['password'])){
-		if(AJAX){
-			return array('status' => 1, 'message' => STR_ACTION_LOGIN_1);
-		}else{
-			$ALERTS->add_alert(STR_ACTION_LOGIN_1, 'info');
-			return false;
-		}
+		return ['user_id' => $USER->get_id()];
+	if(!$USER->load_by_loginemailpass($_POST['loginemail'], $_POST['password'])){
+		return ['code' => 400, 'error' => STR_ACTION_LOGIN_1];
 	}
-	$type = isset($_POST['remember']) && $_POST['remember'] ? 'remember' : 'session';
+	$type = 'remember';
 	$ret = $USER->create_token($type);
 	if($ret['status'] == -3){
-		if(!AJAX){
-			$ALERTS->add_alert(STR_ACTION_LOGIN_2, 'danger');
-		}
-		return array('status' => 2, 'message' => STR_ACTION_LOGIN_2);
+		return ['code' => 400, 'error' => STR_ACTION_LOGIN_2];
 	}else if($ret['status']){
-		if(!AJAX){
-			$ALERTS->add_alert(STR_UNDEFINED_ERROR, 'danger');
-		}
-		return array('status' => 3, 'message' => STR_UNDEFINED_ERROR);
+		return ['code' => 400, 'error' => STR_UNDEFINED_ERROR];
 	}else{
 		$end_time = $type == 'session' ? 0 : $ret['date_end_token']->getTimestamp();
 		setcookie('sid', $ret['token'], $end_time, '/', null, USE_SSL, 1);
 	}
-	if(AJAX){
-		return true;
-	}else{
-		redirect('/');
-	}
+	return ['user_id' => $USER->get_id()];
 }
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Проверяет незанятость логина

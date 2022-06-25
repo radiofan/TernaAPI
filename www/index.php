@@ -39,7 +39,7 @@ require_once MAIN_DIR.'includes/actions/actions.php';
 $ret = do_actions();
 if(isset($ret['code'])){
 	http_response_code($ret['code']);
-	$error = '';
+	$error = STR_UNDEFINED_ERROR;
 	if(isset($ret['error'])){
 		$error = esc_html($ret['error']);
 	}
