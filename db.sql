@@ -26,7 +26,7 @@ CREATE TABLE `our_u_options` (
 --
 
 CREATE TABLE `our_u_roles` (
-    `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` smallint(5) UNSIGNED NOT NULL,
     `role` varchar(30) NOT NULL,
     `description` tinytext NOT NULL,
     `level` tinyint(3) UNSIGNED NOT NULL
@@ -54,13 +54,13 @@ CREATE TABLE `our_u_tokens` (
 --
 
 CREATE TABLE `our_u_users` (
-    `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` bigint(20) UNSIGNED NOT NULL,
     `login` varchar(30) NOT NULL,
     `password` varbinary(32) NOT NULL,
     `email` tinytext NOT NULL,
     `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `bio` text NOT NULL,
-    `avatar` text NOT NULL
+    `avatar` text NOT NULL,
     `level` smallint(6) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -86,7 +86,7 @@ CREATE TABLE `our_u_users_roles` (
 --
 
 CREATE TABLE `p_posts` (
-     `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+     `id` bigint(20) UNSIGNED NOT NULL,
      `user_id` bigint(20) UNSIGNED NOT NULL,
      `parent_id` bigint(20) UNSIGNED NULL DEFAULT NULL,
      `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -155,9 +155,29 @@ ALTER TABLE `p_posts`
 -- Индексы таблицы `p_bugs_features`
 --
 ALTER TABLE `p_bugs_features`
-    ADD PRIMARY KEY (`user_id`, `parent_id`),
+    ADD PRIMARY KEY (`user_id`, `post_id`),
     ADD KEY `user_id_idx` (`user_id`),
-    ADD KEY `parent_id_idx` (`parent_id`);
+    ADD KEY `parent_id_idx` (`post_id`);
+
+--
+-- AUTO_INCREMENT для сохранённых таблиц
+--
+
+--
+-- AUTO_INCREMENT для таблицы `our_u_roles`
+--
+ALTER TABLE `our_u_roles`
+    MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT для таблицы `our_u_users`
+--
+ALTER TABLE `our_u_users`
+    MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT для таблицы `p_posts`
+--
+ALTER TABLE `p_posts`
+    MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Ограничения внешнего ключа таблицы `our_u_options`

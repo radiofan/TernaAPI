@@ -34,7 +34,7 @@ define('MAIL_PASS_RECOVERY_LIVE_HORS', 6);
 define('MAIN_DBHOST', 'localhost');
 define('MAIN_DBUSER', 'root');
 define('MAIN_DBPASS', '');
-define('MAIN_DBNAME', 'parcer.rad');
+define('MAIN_DBNAME', 'terna');
 
 define('SMTP_SERVER', 'localhost');
 define('SMTP_USER', 'me');
