@@ -80,11 +80,8 @@ class rad_user_roles{
 	 * @param string ...$_ или ключи
 	 * @return array|int|null
 	 * права
-	 * view_debug_info
-	 * edit_users
-	 * edit_settings
+	 * change_bio
 	 * ignore_max_token_remember
-	 * view_db_stat
 	 */
 	static final public function get_roles_range(){
 		//используйте только лат. буквы и нижние подчеркивания

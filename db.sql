@@ -92,7 +92,6 @@ CREATE TABLE `p_posts` (
      `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
      `lang` tinytext NOT NULL,
      `text` MEDIUMTEXT NOT NULL,
-     `tags` text NOT NULL,
      `bugs` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
      `features`bigint(20) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -107,6 +106,28 @@ CREATE TABLE `p_bugs_features` (
    `user_id` bigint(20) UNSIGNED NOT NULL,
    `post_id` bigint(20) UNSIGNED NOT NULL,
    `type` tinyint NOT NULL COMMENT '1 - feature, -1 - bug'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `p_tags`
+--
+
+CREATE TABLE `p_tags` (
+   `id` bigint(20) UNSIGNED NOT NULL,
+   `tag` tinytext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `p_tags_posts`
+--
+
+CREATE TABLE `p_tags_posts` (
+  `tag_id` bigint(20) UNSIGNED NOT NULL,
+  `post_id` bigint(20)UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -161,6 +182,20 @@ ALTER TABLE `p_bugs_features`
     ADD KEY `parent_id_idx` (`post_id`);
 
 --
+-- Индексы таблицы `p_tags`
+--
+ALTER TABLE `p_tags`
+    ADD PRIMARY KEY (`id`);
+
+--
+-- Индексы таблицы `p_tags_posts`
+--
+ALTER TABLE `p_tags_posts`
+    ADD PRIMARY KEY (`tag_id`, `post_id`),
+    ADD KEY `tag_id_idx` (`tag_id`),
+    ADD KEY `post_id_idx` (`post_id`);
+
+--
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
@@ -178,6 +213,11 @@ ALTER TABLE `our_u_users`
 -- AUTO_INCREMENT для таблицы `p_posts`
 --
 ALTER TABLE `p_posts`
+    MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT для таблицы `p_posts`
+--
+ALTER TABLE `p_tags`
     MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -213,6 +253,20 @@ ALTER TABLE `p_posts`
 ALTER TABLE `p_bugs_features`
     ADD CONSTRAINT `fb_user_id_key` FOREIGN KEY (`user_id`) REFERENCES `our_u_users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     ADD CONSTRAINT `fb_post_id_key` FOREIGN KEY (`post_id`) REFERENCES `p_posts` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `p_tags_posts`
+--
+ALTER TABLE `p_tags_posts`
+    ADD CONSTRAINT `tp_tag_id_key` FOREIGN KEY (`tag_id`) REFERENCES `p_tags` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    ADD CONSTRAINT `tp_post_id_key` FOREIGN KEY (`post_id`) REFERENCES `p_posts` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+
+
+INSERT INTO `our_u_roles` (`id`, `role`, `description`, `level`) VALUES
+(1, 'change_bio', 'Пользователь может менять свои данные', 1),
+(2, 'ignore_max_token_remember', 'Может создавать сколько угодно токенов входа', 100);
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

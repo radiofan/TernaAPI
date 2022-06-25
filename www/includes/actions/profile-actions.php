@@ -35,3 +35,25 @@ function action_profile(){
 	
 	return $ret;
 }
+
+/**
+ * изменяет данные пользователя, если ему хватает прав на change_bio
+ * @param $_POST = ['text' => string, 'avatar' => string]
+ * @return array|true
+ * ['code' => 400, 'error' => string]
+ * ['code' => 403, 'error' => string]
+ */
+function action_bio(){
+	if(!isset($_POST['text'], $_POST['avatar']))
+		return ['code' => 400, 'error' => STR_EMPTY_DATA];
+	
+	global $USER;
+	
+	if(!can_user('change_bio'))
+		return ['code' => 403, 'error' => STR_ACTION_BIO_1];
+	
+	$USER->set_bio((string)$_POST['text']);
+	$USER->set_avatar((string)$_POST['avatar']);
+	
+	return true;
+}

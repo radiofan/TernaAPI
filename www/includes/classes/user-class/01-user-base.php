@@ -170,7 +170,7 @@ abstract class rad_user_base{
 	
 	/**
 	 * устанавливает о себе пользователя
-	 * @return string
+	 * @return bool
 	 */
 	final public function set_bio($bio){
 		return $this->update_str_data('bio', trim($bio));
