@@ -40,6 +40,6 @@ define('SMTP_SERVER', 'localhost');
 define('SMTP_USER', 'me');
 define('SMTP_PASS', '');
 define('SMTP_PORT', 25);
-define('SMTP_ADDRES_FROM', 'info@terna');
+define('SMTP_ADDRES_FROM', 'info@terna.aa');
 define('SMTP_NAME_FROM', 'Terna');
 ?>

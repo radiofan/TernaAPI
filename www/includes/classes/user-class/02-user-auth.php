@@ -130,7 +130,7 @@ abstract class rad_user_auth extends rad_user_base{
 							$time_end = (clone $now_time)->add(new DateInterval($check_token_data['time_work']));
 							$DB->query('UPDATE `our_u_tokens` SET `time_end` = ?s WHERE `user_id` = ?i AND `token` = ?p', $time_end->format(DB_DATETIME_FORMAT), $user_id, '0x'.$hash);
 							if($type == 'remember')
-								setcookie('sid', $token, $time_end->getTimestamp(), '/', null, USE_SSL, 1);
+								setcookie('sid', $token, $time_end->getTimestamp(), '/', '', USE_SSL, 1);
 							//вход
 							$this->load_user($user_id);
 							return true;
@@ -298,7 +298,7 @@ abstract class rad_user_auth extends rad_user_base{
 	 */
 	static final public function delete_old_tokens($user_id){
 		global $DB;
-		$DB->query('DELETE FROM `our_u_tokens` WHERE `user_id` = ?i AND `time_end` < MY_NOW()', $user_id);
+		$DB->query('DELETE FROM `our_u_tokens` WHERE `user_id` = ?i AND `time_end` < NOW()', $user_id);
 	}
 
 	/**

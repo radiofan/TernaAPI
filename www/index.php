@@ -16,6 +16,10 @@ for($i=0; $i<sizeof($files); $i++){
 		require_once MAIN_DIR.'includes/functions/'.$files[$i];
 }
 
+require_once MAIN_DIR.'includes/phpmailer/PHPMailer.php';
+require_once MAIN_DIR.'includes/phpmailer/Exception.php';
+require_once MAIN_DIR.'includes/phpmailer/SMTP.php';
+
 require_once MAIN_DIR.'includes/classes/log-class.php';
 if(defined('USE_LOG') && USE_LOG)
 	$LOG = new rad_log(MAIN_DIR.'files/logs/');

@@ -257,7 +257,7 @@ class rad_db{
 	protected function prepareQuery($args){
 		$query = '';
 		$raw   = array_shift($args);
-		$array = preg_split('~(\?[nsiuapd])~u',$raw,null,PREG_SPLIT_DELIM_CAPTURE);
+		$array = preg_split('~(\?[nsiuapd])~u',$raw,-1,PREG_SPLIT_DELIM_CAPTURE);
 		$anum  = count($args);
 		$pnum  = floor(count($array) / 2);
 		if($pnum != $anum){

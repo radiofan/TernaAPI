@@ -97,7 +97,7 @@ final class rad_user extends rad_user_auth{
 			$login_clear,
 			$pass_hash,
 			$email,
-			'MY_NOW()',
+			'NOW()',
 			$bio,
 			$avatar,
 			$level
