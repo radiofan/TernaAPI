@@ -92,6 +92,7 @@ CREATE TABLE `p_posts` (
      `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
      `lang` tinytext NOT NULL,
      `text` MEDIUMTEXT NOT NULL,
+     `tags` text NOT NULL,
      `bugs` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
      `features`bigint(20) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

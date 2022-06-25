@@ -18,7 +18,7 @@ final class rad_user extends rad_user_auth{
 	 */
 	function __construct($id = null){
 		parent::__construct($id);
-		if(empty($id) && isset($_COOKIE['sid'])){
+		if(is_null($id) && isset($_COOKIE['sid'])){
 			try{
 				$this->load_user_by_token((string)$_COOKIE['sid']);
 			}catch(Exception $e){

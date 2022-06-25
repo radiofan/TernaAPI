@@ -33,14 +33,14 @@ function do_actions(){
 /**
  * login-actions.php
  * @see action_login
- * @see action_signin
+ * @see action_register
  * @see action_check_login
- * @see action_send_pass_recovery
+ * @see action_check_email
  * @see action_exit
  * @see action_logout
  * 
- * user-settings-actions.php
- * @see action_pass_recovery
+ * profile-actions.php
+ * @see action_profile
  */
 
 ?>

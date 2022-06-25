@@ -101,7 +101,7 @@ function action_login(){
 
 /**
  * Проверяет незанятость логина
- * @param $_POST = ['login' => string]
+ * @param $_REQUEST = ['login' => string]
  * @return bool true - логин свободен
  */
 function action_check_login(){
@@ -112,7 +112,7 @@ function action_check_login(){
 
 /**
  * Проверяет незанятость почты
- * @param $_POST = ['email' => string]
+ * @param $_REQUEST = ['email' => string]
  * @return bool true - почта свободен
  */
 function action_check_email(){

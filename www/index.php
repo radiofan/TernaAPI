@@ -41,6 +41,8 @@ $USER = new rad_user();
 
 require_once MAIN_DIR.'includes/actions/actions.php';
 $ret = do_actions();
+header('Access-Control-Allow-Origin: *');
+
 if(isset($ret['code'])){
 	http_response_code($ret['code']);
 	$error = STR_UNDEFINED_ERROR;
