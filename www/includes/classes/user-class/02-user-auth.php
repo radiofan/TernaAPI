@@ -16,8 +16,7 @@ abstract class rad_user_auth extends rad_user_base{
 	 * если не удачно, текущий экземпляр станет гостем
 	 * @param string $login - логин пользователя, лечится login_clear
 	 * @param string $password - пароль пользователя (НЕ хэш)
-	 * @see login_clear
-	 * @see rad_user::password_hash
+	 * @see login_clear()
 	 * @return bool - загружен ли пользователь
 	 */
 	final function load_by_loginpass($login, $password){
@@ -33,12 +32,71 @@ abstract class rad_user_auth extends rad_user_base{
 			$this->set_guest();
 			return false;
 		}
-		$pass_hash = self::password_hash($password, $data['login']);
-		if(!hash_equals($data['password'], $pass_hash)){
+		return $this->load_by_db_data($data['id'], $password, $data['password'], $data['login']);
+	}
+	
+	/**
+	 * Загружает пользователя с помощью почты и пароля
+	 * если не удачно, текущий экземпляр станет гостем
+	 * @param string $email - логин пользователя
+	 * @param string $password - пароль пользователя (НЕ хэш)
+	 * @see email_clear()
+	 * @return bool - загружен ли пользователь
+	 */
+	final function load_by_emailpass($email, $password){
+		global $DB;
+		$password = (string) $password;
+		$email = email_clear($email);
+		if($password === '' || $email === ''){
 			$this->set_guest();
 			return false;
 		}
-		if(!$this->load_user($data['id'])){
+		$data = $DB->getRow('SELECT `id`, `password`, `login` FROM `our_u_users` WHERE `email` = ?s', $email);
+		if(!$data){
+			$this->set_guest();
+			return false;
+		}
+		return $this->load_by_db_data($data['id'], $password, $data['password'], $data['login']);
+	}
+	
+	/**
+	 * Загружает пользователя с помощью почты или логина и пароля
+	 * если не удачно, текущий экземпляр станет гостем
+	 * @param string $login_email - логин или email пользователя
+	 * @param string $password - пароль пользователя (НЕ хэш)
+	 * @return bool - загружен ли пользователь
+	 */
+	final function load_by_loginemailpass($login_email, $password){
+		global $DB;
+		$password = (string) $password;
+		$login = login_clear($login_email);
+		$email = email_clear($login_email);
+		if($password === ''){
+			$this->set_guest();
+			return false;
+		}
+		$data = $DB->getRow('SELECT `id`, `password`, `login` FROM `our_u_users` WHERE `email` = ?s OR `login` = ?s', $email, $login);
+		if(!$data){
+			$this->set_guest();
+			return false;
+		}
+		return $this->load_by_db_data($data['id'], $password, $data['password'], $data['login']);
+	}
+	
+	/**
+	 * @param numeric-string|int $id - id загружаемого пользователя
+	 * @param string $password_user - пароль переданный пользователем
+	 * @param string $password_db - хэш пароля из бд
+	 * @param string $login - логин пользователя
+	 * @return bool - загружен ли пользователь
+	 */
+	private function load_by_db_data($id, $password_user, $password_db, $login){
+		$pass_hash = self::password_hash($password_user, $login);
+		if(!hash_equals($password_db, $pass_hash)){
+			$this->set_guest();
+			return false;
+		}
+		if(!$this->load_user($id)){
 			$this->set_guest();
 			return false;
 		}
@@ -122,6 +180,19 @@ abstract class rad_user_auth extends rad_user_base{
 		if(mb_strlen($login) < 1)
 			return false;
 		return !is_string($DB->getOne('SELECT `id` FROM `our_u_users` WHERE `login` = ?s', $login));
+	}
+	
+	/**
+	 * проверяет незанятость почты
+	 * @param string $email - почта пользователя
+	 * @return bool - true если почта не занята
+	 */
+	static final public function check_email($email){
+		global $DB;
+		$email = email_clear($email);
+		if(mb_strlen($email) < 1)
+			return false;
+		return !is_string($DB->getOne('SELECT `id` FROM `our_u_users` WHERE `email` = ?s', $email));
 	}
 
 	/**

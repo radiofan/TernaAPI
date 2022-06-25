@@ -32,6 +32,10 @@ final class rad_user extends rad_user_auth{
 	 * @param string $login - логин пользователя
 	 * @param string $password - пароль пользователя (НЕ хэш)
 	 * @param string $email - почта пользователя
+	 *
+	 * @param string $avatar - аватар
+	 * @param string $bio - о себе
+	 *
 	 * @param string $level - уровень пользователя
 	 * @return int
 	 * >0: id вставленного пользователя
@@ -46,7 +50,7 @@ final class rad_user extends rad_user_auth{
 	 * -8: уровень пользователя не лежит в интервале;
 	 * -9: ползователь не добавлен;
 	 */
-	static public function create_new_user($login, $password, $email, $level){
+	static public function create_new_user($login, $password, $email, $level, $bio='', $avatar=''){
 		global $DB;
 		$password_clear = password_clear($password);
 		if(strcmp($password_clear, $password)){
@@ -72,23 +76,30 @@ final class rad_user extends rad_user_auth{
 		if(mb_strlen($email)< 1){
 			return -6;
 		}
-		if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		if(email_clear($email) != $email) {
 			return -7;
 		}
 		if($DB->getOne('SELECT `id` FROM `our_u_users` WHERE `email` = ?s', $email)){
 			return -10;
 		}
 		
+		$bio = trim($bio);
+		$avatar = trim($avatar);
+		
+		
+		
 		if($level < rad_user_roles::USER || $level > rad_user_roles::ADMIN){
 			return -8;
 		}
 
 		if(!$DB->query(
-			'INSERT INTO `our_u_users` (`login`, `password`, `email`, `date`, `level`) VALUES(?s, ?p, ?s, ?p, ?i)',
+			'INSERT INTO `our_u_users` (`login`, `password`, `email`, `date`, `bio`, `avatar`, `level`) VALUES(?s, ?p, ?s, ?p, ?s, ?s, ?i)',
 			$login_clear,
 			$pass_hash,
 			$email,
 			'MY_NOW()',
+			$bio,
+			$avatar,
 			$level
 		)){
 			return -9;

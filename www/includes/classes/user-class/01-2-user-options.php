@@ -125,7 +125,6 @@ class rad_user_options{
 	/**
 	 * Обновляет значение всех параметров юзера в БД
 	 * блокирует и разблокирует таблицу `our_u_options`
-	 * //TODO опции не протестированы
 	 */
 	final function update_all_options(){
 		//проверка на гостя

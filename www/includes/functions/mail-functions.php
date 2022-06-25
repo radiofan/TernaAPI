@@ -81,7 +81,7 @@ function send_verified_mail($user_id){
 	$new_user->options->update_options('mail_verified_token');
 
 	$mail_body = get_verified_mail_body(array(
-		'verify_link' => 'http'.(USE_SSL ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/activation/',
+		'verify_link' => 'http'.(USE_SSL ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/?action=activation&token=',
 		'token' => $token,
 		'time_end' => $end_time,
 		'login' => $new_user->get_login()
@@ -133,7 +133,6 @@ function send_pass_recovery_mail($user_id){
 	$user->options->update_options('pass_recovery_token');
 
 	$mail_body = get_pass_recovery_body(array(
-		'verify_link' => 'http'.(USE_SSL ? 's' : '').'://'.$_SERVER['HTTP_HOST'].'/recovery-password/',
 		'token' => $token,
 		'time_end' => $end_time,
 		'login' => $user->get_login()
@@ -159,16 +158,16 @@ function get_verified_mail_body($data){
 <body>
 	<table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0;font-family: \'Courier New\', monospace;" width="100%">
 		<tr>
-			<td style="text-align:center">Добро пожаловать в сервис <b>RADIOFAN timetable</b></td>
+			<td style="text-align:center">Welcome Terna!!!</td>
 		</tr>
 		<tr>
-			<td style="text-align:left">Ваш логин: <span style="background-color:#e6e6e6;font-weight:bold">&nbsp;'.$data['login'].'&nbsp;</span></td>
+			<td style="text-align:left">Your login: <span style="background-color:#e6e6e6;font-weight:bold">&nbsp;'.$data['login'].'&nbsp;</span></td>
 		</tr>
 		<tr>
 			<td style="text-align:left">
-				Подтвердить почту <a href="'.$data['verify_link'].$data['token'].'">'.$data['verify_link'].'</a>
+				Verefy email <a href="'.$data['verify_link'].$data['token'].'">'.$data['verify_link'].$data['token'].'</a>
 				<br>
-				Ссылка доступна до <b>'.$data['time_end']->format('d.m.Y H:i').' ('.get_msk_time_offset($data['time_end']).')</b>
+				Link time end <b>'.$data['time_end']->format('d.m.Y H:i').' ('.get_msk_time_offset($data['time_end']).')</b>
 			</td>
 		</tr>
 		<tr>
@@ -197,20 +196,20 @@ function get_pass_recovery_body($data){
 <body>
 	<table border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0;font-family: \'Courier New\', monospace;" width="100%">
 		<tr>
-			<td style="text-align:center"><b>RADIOFAN timetable</b></td>
+			<td style="text-align:center"><b>Terna</b></td>
 		</tr>
 		<tr>
 			<td style="text-align:left">
-				Был произведен запрос на смену пароля для пользователя <span style="background-color:#e6e6e6;font-weight:bold">&nbsp;'.$data['login'].'&nbsp;</span>
+				A request was made to change the password for the user <span style="background-color:#e6e6e6;font-weight:bold">&nbsp;'.$data['login'].'&nbsp;</span>
 				<br>
-				Если это были не вы, проигнорируйте сообщение
+				If it wasn\'t you, ignore the message
 			</td>
 		</tr>
 		<tr>
 			<td style="text-align:left">
-				Ссылка для смены пароля <a href="'.$data['verify_link'].$data['token'].'">'.$data['verify_link'].'</a>
+				Token for password change <pre>'.$data['token'].'</pre>
 				<br>
-				Ссылка доступна до <b>'.$data['time_end']->format('d.m.Y H:i').' ('.get_msk_time_offset($data['time_end']).')</b>
+				The token is available until <b>'.$data['time_end']->format('d.m.Y H:i').' ('.get_msk_time_offset($data['time_end']).')</b>
 			</td>
 		</tr>
 		<tr>
@@ -229,11 +228,13 @@ function get_mail_footer(){
 	return '
 <span style="display:block;overflow:hidden">--------------------------------------------------------------------------------</span>
 <xmp>
-       .           ___    _   ___ ___ ___  ___ _   _  _ 
-     --┼--        | _ \\  /_\\ |   \\_ _/ _ \\| __/_\\ | \\| |
-   / ══╧══ \\      |   / / _ \\| |) | | (_) | _/ _ \\| .` |
-   \\ ↗   \\ /      |_|_\\/_/ \\_\\___/___\\___/|_/_/ \\_\\_|\\_| timetable
-  ‾‾ ----- ‾‾
+  _______
+ |__   __|
+    | | ___ _ __ _ __   __ _
+    | |/ _ \\ \'__| \'_ \\ / _` |
+    | |  __/ |  | | | | (_| |
+    |_|\___|_|  |_| |_|\\__,_|
+    
 </xmp>';
 }
 

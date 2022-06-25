@@ -21,6 +21,12 @@ abstract class rad_user_base{
 	protected $date;
 	/** @var string $email - почта пользоватля */
 	protected $email;
+	
+	/** @var string $avatar - аватарка */
+	protected $avatar;
+	/** @var string $bio - О себе */
+	protected $bio;
+	
 	/** @var rad_user_roles $roles - объект отвечающий за права */
 	protected $roles;
 	/** @var rad_user_options $options - объект отвечающий за параметры */
@@ -51,6 +57,10 @@ abstract class rad_user_base{
 		$this->pass_hash = '';
 		$this->email = '';
 		$this->date = new DateTime();
+		
+		$this->avatar = '';
+		$this->bio = '';
+		
 		$this->roles = new rad_user_roles(0);
 		$this->options = new rad_user_options(0);
 	}
@@ -63,7 +73,7 @@ abstract class rad_user_base{
 	function load_user($id){
 		global $DB;
 		$id = absint($id);
-		$tmp = $DB->getRow('SELECT `login`, `password`, `email`, `date` FROM `our_u_users` WHERE `id` = ?i', $id);
+		$tmp = $DB->getRow('SELECT `login`, `password`, `email`, `date`, `avatar`, `bio` FROM `our_u_users` WHERE `id` = ?i', $id);
 		if(empty($tmp)){
 			return false;
 		}
@@ -71,6 +81,10 @@ abstract class rad_user_base{
 		$this->login = $tmp['login'];
 		$this->pass_hash = $tmp['password'];
 		$this->email = $tmp['email'];
+		
+		$this->avatar = $tmp['avatar'];
+		$this->bio = $tmp['bio'];
+		
 		$this->date = DateTime::createFromFormat(DB_DATETIME_FORMAT, $tmp['date']);
 		try{
 			$this->roles = new rad_user_roles($this->id);
@@ -111,20 +125,15 @@ abstract class rad_user_base{
 
 	/**
 	 * устанавливает почту юзера
-	 * проверка на пустоты и на дефолтного юзера
+	 * @see email_clear()
 	 * @param $email
 	 * @return bool
 	 */
 	final public function set_email($email){
-		if($this->id == 0)
+		$email = email_clear((string)$email);
+		if($email === '')
 			return false;
-		$email = trim($email);
-		if((string)$email === '')
-			return false;
-		$this->email = $email;
-		global $DB;
-		$DB->query('UPDATE `our_u_users` SET `email` = ?s WHERE `id` = ?i', $this->email, $this->id);
-		return true;
+		return $this->update_str_data('email', $email);
 	}
 	
 	/**
@@ -133,6 +142,49 @@ abstract class rad_user_base{
 	 */
 	final public function get_date(){
 		return (clone $this->date);
+	}
+	
+	/**
+	 * вернет аватар пользователя
+	 * @return string
+	 */
+	final public function get_avatar(){
+		return $this->avatar;
+	}
+	
+	/**
+	 * устанавливает аватар пользователя
+	 * @return string
+	 */
+	final public function set_avatar($avatar){
+		return $this->update_str_data('avatar', $avatar);
+	}
+	
+	/**
+	 * вернет о себе пользователя
+	 * @return string
+	 */
+	final public function get_bio(){
+		return $this->bio;
+	}
+	
+	/**
+	 * устанавливает о себе пользователя
+	 * @return string
+	 */
+	final public function set_bio($bio){
+		return $this->update_str_data('bio', trim($bio));
+	}
+	
+	private function update_str_data($key, $val){
+		if($this->id == 0)
+			return false;
+		global $DB;
+		if($DB->query('UPDATE `our_u_users` SET ?n = ?s WHERE `id` = ?i', $key, $val, $this->id) !== false){
+			$this->$key = $val;
+			return true;
+		}
+		return false;
 	}
 
 	/**

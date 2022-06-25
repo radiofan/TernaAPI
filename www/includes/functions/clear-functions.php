@@ -16,6 +16,14 @@ function login_clear($text){
 	return preg_replace('/[^a-z0-9_\\-]/iu', '', $text);
 }
 /**
+ * попытается отфильтровать почту, если не удастся вернет пустую строку
+ * @param string $text
+ * @return string
+ */
+function email_clear($text){
+	return filter_var($text, FILTER_VALIDATE_EMAIL) ?: '';
+}
+/**
  * удаляем все символы кроме [a-f0-9], переводит в верхний регистр
  * @param string $text
  * @return string
@@ -24,12 +32,12 @@ function hex_clear($text){
 	return mb_strtoupper(preg_replace('/[^a-f0-9]/iu', '', $text));
 }
 /**
- * удаляем все символы кроме [a-z0-9!@%&$?*]
+ * удаляем все символы кроме [a-z0-9!@%&$?*+_-]
  * @param string $text
  * @return string
  */
 function password_clear($text){
-	return preg_replace('/[^a-z0-9!@%&\\$\\?\\*]/iu', '', $text);
+	return preg_replace('/[^a-z0-9!@%&_\\$\\?\\*\\+\\-]/iu', '', $text);
 }
 
 /**
