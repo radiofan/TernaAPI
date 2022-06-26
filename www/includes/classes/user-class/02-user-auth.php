@@ -201,8 +201,8 @@ abstract class rad_user_auth extends rad_user_base{
 	 */
 	final function user_logout(){
 		global $OPTIONS;
-		if(isset($OPTIONS['headers']['sid'])){
-			$token_data = self::decode_cookie_token($OPTIONS['headers']['sid']);
+		if(!empty($OPTIONS['sid'])){
+			$token_data = self::decode_cookie_token($OPTIONS['sid']);
 			if($token_data){
 				//токен распарсился, грохнем его
 				global $DB;

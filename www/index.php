@@ -36,6 +36,7 @@ $OPTIONS['time_start'] = $_SERVER['REQUEST_TIME_FLOAT'];
 $OPTIONS['user_ip'] = get_ip();
 $OPTIONS['referer_data'] = parse_url(empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER']);
 $OPTIONS['headers'] = apache_request_headers();
+$OPTIONS['sid'] = '';
 
 
 //костыль для парсинга application/json
@@ -44,6 +45,12 @@ if(isset($OPTIONS['headers']['Content-Type'])){
 		$_POST = json_decode(file_get_contents('php://input'), 1);
 		$_POST = is_array($_POST) ? $_POST : [];
 	}
+}
+
+if(isset($OPTIONS['headers']['sid'])){
+	$OPTIONS['sid'] = $OPTIONS['headers']['sid'];
+}else if(isset($_POST['sid'])){
+	$OPTIONS['sid'] = $_POST['sid'];
 }
 
 

@@ -19,9 +19,9 @@ final class rad_user extends rad_user_auth{
 	function __construct($id = null){
 		global $OPTIONS;
 		parent::__construct($id);
-		if(is_null($id) && isset($OPTIONS['headers']['sid'])){
+		if(is_null($id) && !empty($OPTIONS['sid'])){
 			try{
-				$this->load_user_by_token($OPTIONS['headers']['sid']);
+				$this->load_user_by_token($OPTIONS['sid']);
 			}catch(Exception $e){
 				$this->user_logout();
 			}

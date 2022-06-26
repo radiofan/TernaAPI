@@ -113,7 +113,6 @@ class rad_post{
 				return false;
 		}
 		
-		//todo valid
 		if(false !== $DB->query('INSERT INTO `p_posts` (`text`, `user_id`, `parent_id`, `lang`) VALUES (?s, ?i, ?i, ?s)', $text, $user_id, $parent_id, $lang)){
 			$insert_id = $DB->insertId();
 			if($parent_id){
