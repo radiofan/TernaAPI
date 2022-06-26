@@ -13,7 +13,7 @@ function action_register(){
 	if($USER->get_id())
 		return ['user_id' => $USER->get_id()];
 	
-	$new_user_id = rad_user::create_new_user($_POST['login'], $_POST['password'], $_POST['email'], rad_user_roles::USER);
+	$new_user_id = rad_user::create_new_user($_POST['login'], $_POST['password'], $_POST['email'], rad_user_roles::USER, '', 'body{background-color:hls('.random_int(0, 360).'deg,50%,40%);}');
 	
 	$ret = '';
 	$status = 0;

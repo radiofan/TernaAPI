@@ -61,3 +61,40 @@ function action_publish(){
 	
 	return $ret;
 }
+
+function action_posts(){
+	global $USER, $DB;
+	
+	$where = '';
+	if(isset($_REQUEST['user'])){
+		$where .= $DB->parse('WHERE `user_id` = ?i ', $_REQUEST['user']);
+	}
+	if(isset($_REQUEST['anchor'])){
+		$where .= $DB->parse('AND `id` < ?i ', $_REQUEST['anchor']);
+	}
+	
+	$posts_id = $DB->getCol('SELECT `id` FROM `p_posts` '.$where.'ORDER BY `id` DESC LIMIT ?i', POSTS_PER_PAGE) ?: [];
+	
+	$posts = [];
+	$post = new rad_post();
+	$len = sizeof($posts_id);
+	for($i=0; $i<$len; $i++){
+		$post->load_all_from_db($posts_id[$i]);
+		
+		$posts[] = [
+			'id' => $post->id,
+			'author' => $post->author_data,
+			'parent' => empty($post->parent_data['post']) ? null : $post->parent_data,
+			'mark' => $post->get_user_mark($USER->get_id()),
+			'data' => [
+				'lang' => $post->lang,
+				'text' => $post->text,
+				'bugs' => $post->bugs,
+				'features' => $post->features,
+				'forks' => $post->forks,
+			]
+		];
+	}
+	
+	return $posts;
+}
