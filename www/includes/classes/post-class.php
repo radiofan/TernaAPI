@@ -137,11 +137,15 @@ class rad_post{
 		$data = $DB->getRow('SELECT * FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
 		
 		if($data){
-			if($data['type'] == 1)
-				return true;
+			$DB->query('DELETE FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+			if($data['type'] == 1){
+				$DB->query('UPDATE p_posts SET `features` = `features` - 1 WHERE `id` = ?i', $this->id);
+				$this->features -= 1;
+				return 0;
+			}
 			
 			if($data['type'] == -1){
-				$DB->query('DELETE FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+				
 				$DB->query('UPDATE p_posts SET `bugs` = `bugs` - 1 WHERE `id` = ?i', $this->id);
 				$this->bugs -= 1;
 			}
@@ -151,7 +155,7 @@ class rad_post{
 		$DB->query('INSERT INTO `p_bugs_features` (user_id, post_id, `type`) VALUES (?i, ?i, ?i)', $user_id, $this->id, 1);
 		$DB->query('UPDATE p_posts SET `features` = `features` + 1 WHERE `id` = ?i', $this->id);
 		$this->features += 1;
-		return true;
+		return 1;
 	}
 	
 	public function set_bug($user_id){
@@ -165,11 +169,14 @@ class rad_post{
 		$data = $DB->getRow('SELECT * FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
 		
 		if($data){
-			if($data['type'] == -1)
-				return true;
+			$DB->query('DELETE FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+			if($data['type'] == -1){
+				$DB->query('UPDATE p_posts SET `bugs` = `bugs` - 1 WHERE `id` = ?i', $this->id);
+				$this->bugs -= 1;
+				return 0;
+			}
 			
 			if($data['type'] == 1){
-				$DB->query('DELETE FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
 				$DB->query('UPDATE p_posts SET `features` = `features` - 1 WHERE `id` = ?i', $this->id);
 				$this->features -= 1;
 			}
@@ -179,6 +186,6 @@ class rad_post{
 		$DB->query('INSERT INTO `p_bugs_features` (user_id, post_id, `type`) VALUES (?i, ?i, ?i)', $user_id, $this->id, -1);
 		$DB->query('UPDATE p_posts SET `bugs` = `bugs` + 1 WHERE `id` = ?i', $this->id);
 		$this->bugs += 1;
-		return true;
+		return -1;
 	}
 }

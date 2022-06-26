@@ -146,6 +146,13 @@ function action_post(){
 	return $ret;
 }
 
+/**
+ * ставит дизлайк или сбрасывает его при повторном нажатии
+ * @param $_REQUEST = ['post'(post id) => int]
+ * @return array ['bugs' => int, 'features' => int, 'mark' => -1|0]
+ * ['code' => 400, 'error' => string]
+ * ['code' => 403, 'error' => string]
+ */
 function action_bug(){
 	global $USER;
 	
@@ -161,10 +168,17 @@ function action_bug(){
 	if($post->id == 0)
 		return ['code' => 400, 'error' => STR_ACTION_POST_1];
 	
-	$post->set_bug($USER->get_id());
-	return ['bugs' => $post->bugs, 'features' => $post->features];
+	$mark = $post->set_bug($USER->get_id());
+	return ['bugs' => $post->bugs, 'features' => $post->features, 'mark' => $mark];
 }
 
+/**
+ * ставит лайк или сбрасывает его при повторном нажатии
+ * @param $_REQUEST = ['post'(post id) => int]
+ * @return array ['bugs' => int, 'features' => int, 'mark' => 1|0]
+ * ['code' => 400, 'error' => string]
+ * ['code' => 403, 'error' => string]
+ */
 function action_feature(){
 	global $USER;
 	
@@ -180,6 +194,6 @@ function action_feature(){
 	if($post->id == 0)
 		return ['code' => 400, 'error' => STR_ACTION_POST_1];
 	
-	$post->set_feature($USER->get_id());
-	return ['bugs' => $post->bugs, 'features' => $post->features];
+	$mark = $post->set_feature($USER->get_id());
+	return ['bugs' => $post->bugs, 'features' => $post->features, 'mark' => $mark];
 }
