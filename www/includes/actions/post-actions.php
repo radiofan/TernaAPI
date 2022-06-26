@@ -70,7 +70,8 @@ function action_posts(){
 		$where .= $DB->parse('WHERE `user_id` = ?i ', $_REQUEST['user']);
 	}
 	if(isset($_REQUEST['anchor'])){
-		$where .= $DB->parse('AND `id` < ?i ', $_REQUEST['anchor']);
+		$where .= mb_strlen($where) ? 'AND ' : 'WHERE ';
+		$where .= $DB->parse('`id` < ?i ', $_REQUEST['anchor']);
 	}
 	
 	$posts_id = $DB->getCol('SELECT `id` FROM `p_posts` '.$where.'ORDER BY `id` DESC LIMIT ?i', POSTS_PER_PAGE) ?: [];
