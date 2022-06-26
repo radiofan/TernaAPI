@@ -107,7 +107,7 @@ abstract class rad_user_auth extends rad_user_base{
 	/**
 	 * загружает ползователя с помощью токена
 	 * если не удачно, текущий экземпляр станет гостем
-	 * @param string $token - $_COOKIE['sid']
+	 * @param string $token - заголовок sid
 	 * @return bool - загружен ли пользователь
 	 */
 	final function load_user_by_token($token){
@@ -129,8 +129,10 @@ abstract class rad_user_auth extends rad_user_base{
 							$type = $check_token_data['time_work'] === 'PT'.SESSION_TOKEN_LIVE_SECONDS.'S' ? 'session' : 'remember';
 							$time_end = (clone $now_time)->add(new DateInterval($check_token_data['time_work']));
 							$DB->query('UPDATE `our_u_tokens` SET `time_end` = ?s WHERE `user_id` = ?i AND `token` = ?p', $time_end->format(DB_DATETIME_FORMAT), $user_id, '0x'.$hash);
+							/*
 							if($type == 'remember')
 								setcookie('sid', $token, ['expires' => $time_end->getTimestamp(), 'path' => '/', 'domain' => '', 'secure' => USE_SSL, 'httponly' => 0, 'samesite' => 'None']);
+							*/
 							//вход
 							$this->load_user($user_id);
 							return true;
@@ -142,7 +144,6 @@ abstract class rad_user_auth extends rad_user_base{
 				}
 			}
 		}
-		setcookie('sid', '', time()-SECONDS_PER_DAY);
 		$this->set_guest();
 		return false;
 	}
@@ -199,8 +200,9 @@ abstract class rad_user_auth extends rad_user_base{
 	 * Делает юзера гостем и удаляет сессию текущего юзера
 	 */
 	final function user_logout(){
-		if(isset($_COOKIE['sid'])){
-			$token_data = self::decode_cookie_token((string)$_COOKIE['sid']);
+		global $OPTIONS;
+		if(isset($OPTIONS['headers']['sid'])){
+			$token_data = self::decode_cookie_token($OPTIONS['headers']['sid']);
 			if($token_data){
 				//токен распарсился, грохнем его
 				global $DB;
@@ -213,7 +215,6 @@ abstract class rad_user_auth extends rad_user_base{
 				}
 			}
 		}
-		setcookie('sid', '', time()- SECONDS_PER_DAY);
 		$this->set_guest();
 	}
 

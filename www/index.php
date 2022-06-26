@@ -35,6 +35,17 @@ $OPTIONS['user_agent'] = empty($_SERVER['HTTP_USER_AGENT']) ? '' : $_SERVER['HTT
 $OPTIONS['time_start'] = $_SERVER['REQUEST_TIME_FLOAT'];
 $OPTIONS['user_ip'] = get_ip();
 $OPTIONS['referer_data'] = parse_url(empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER']);
+$OPTIONS['headers'] = apache_request_headers();
+
+
+//костыль для парсинга application/json
+if(isset($OPTIONS['headers']['Content-Type'])){
+	if(empty($_POST) && preg_match('#application/json#i', $OPTIONS['headers']['Content-Type'])){
+		$_POST = json_decode(file_get_contents('php://input'), 1);
+		$_POST = is_array($_POST) ? $_POST : [];
+	}
+}
+
 
 require_once MAIN_DIR.'includes/classes/user-class/03-user-class.php';
 $USER = new rad_user();

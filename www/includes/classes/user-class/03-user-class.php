@@ -17,10 +17,11 @@ final class rad_user extends rad_user_auth{
 	 * @param int $id - ID юзера, null для создания объекта текущекого юзера
 	 */
 	function __construct($id = null){
+		global $OPTIONS;
 		parent::__construct($id);
-		if(is_null($id) && isset($_COOKIE['sid'])){
+		if(is_null($id) && isset($OPTIONS['headers']['sid'])){
 			try{
-				$this->load_user_by_token((string)$_COOKIE['sid']);
+				$this->load_user_by_token($OPTIONS['headers']['sid']);
 			}catch(Exception $e){
 				$this->user_logout();
 			}

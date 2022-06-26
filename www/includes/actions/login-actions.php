@@ -3,7 +3,7 @@
 /**
  * событие регистрации пользователя
  * @param $_POST = ['login' => string, 'password' => string, 'email' => string]
- * @return array ['user_id' => int]
+ * @return array ['user_id' => int, 'sid' => string], ['user_id' => int] если зарегестрирован
  * ['code' => 400, 'error' => string]
  */
 function action_register(){
@@ -60,19 +60,16 @@ function action_register(){
 	$ret = $USER->create_token('remember');
 	if($ret['status']){
 		return array('code' => 400, 'error' => STR_UNDEFINED_ERROR);
-	}else{
-		setcookie('sid', $ret['token'], ['expires' => 0, 'path' => '/', 'domain' => '', 'secure' => USE_SSL, 'httponly' => 0, 'samesite' => 'None']);
 	}
 	
-	//TODO привествие
-	return ['user_id' => $USER->get_id()];
+	return ['user_id' => $USER->get_id(), 'sid' => $ret['token']];
 }
 
 
 /**
  * событие входа пользователя, если не ajax запрос и все прошло успешно, то редирктит на главную
  * @param $_POST = ['loginemail' => string, 'password' => string]
- * @return array ['user_id' => int]
+ * @return array ['user_id' => int, 'sid' => string], ['user_id' => int] если зарегестрирован
  * ['code' => 400, 'error' => string]
  */
 function action_login(){
@@ -92,11 +89,8 @@ function action_login(){
 		return ['code' => 400, 'error' => STR_ACTION_LOGIN_2];
 	}else if($ret['status']){
 		return ['code' => 400, 'error' => STR_UNDEFINED_ERROR];
-	}else{
-		$end_time = $type == 'session' ? 0 : $ret['date_end_token']->getTimestamp();
-		setcookie('sid', $ret['token'], ['expires' => $end_time, 'path' => '/', 'domain' => '', 'secure' => USE_SSL, 'httponly' => 0, 'samesite' => 'None']);
 	}
-	return ['user_id' => $USER->get_id()];
+	return ['user_id' => $USER->get_id(), 'sid' => $ret['token']];
 }
 
 /**
