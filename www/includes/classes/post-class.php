@@ -89,7 +89,7 @@ class rad_post{
 	public function get_user_mark($user_id){
 		global $DB;
 		if($this->id == 0)
-			return;
+			return 0;
 		$ret = $DB->getOne('SELECT `type` FROM `p_bugs_features` WHERE `post_id` = ?i AND `user_id` = ?i', $this->id, $user_id);
 		return (int) $ret;
 	}
@@ -124,5 +124,61 @@ class rad_post{
 		}else{
 			return false;
 		}
+	}
+	
+	public function set_feature($user_id){
+		global $DB;
+		
+		if($user_id == 0)
+			return false;
+		if($this->id == 0)
+			return false;
+		
+		$data = $DB->getRow('SELECT * FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+		
+		if($data){
+			if($data['type'] == 1)
+				return true;
+			
+			if($data['type'] == -1){
+				$DB->query('DELETE FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+				$DB->query('UPDATE p_posts SET `bugs` = `bugs` - 1 WHERE `id` = ?i', $this->id);
+				$this->bugs -= 1;
+			}
+			
+		}
+		
+		$DB->query('INSERT INTO `p_bugs_features` (user_id, post_id, `type`) VALUES (?i, ?i, ?i)', $user_id, $this->id, 1);
+		$DB->query('UPDATE p_posts SET `features` = `features` + 1 WHERE `id` = ?i', $this->id);
+		$this->features += 1;
+		return true;
+	}
+	
+	public function set_bug($user_id){
+		global $DB;
+		
+		if($user_id == 0)
+			return false;
+		if($this->id == 0)
+			return false;
+		
+		$data = $DB->getRow('SELECT * FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+		
+		if($data){
+			if($data['type'] == -1)
+				return true;
+			
+			if($data['type'] == 1){
+				$DB->query('DELETE FROM `p_bugs_features` WHERE `user_id` = ?i AND `post_id` = ?i', $user_id, $this->id);
+				$DB->query('UPDATE p_posts SET `features` = `features` - 1 WHERE `id` = ?i', $this->id);
+				$this->features -= 1;
+			}
+			
+		}
+		
+		$DB->query('INSERT INTO `p_bugs_features` (user_id, post_id, `type`) VALUES (?i, ?i, ?i)', $user_id, $this->id, -1);
+		$DB->query('UPDATE p_posts SET `bugs` = `bugs` + 1 WHERE `id` = ?i', $this->id);
+		$this->bugs += 1;
+		return true;
 	}
 }

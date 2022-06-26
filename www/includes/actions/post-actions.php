@@ -145,3 +145,41 @@ function action_post(){
 	
 	return $ret;
 }
+
+function action_bug(){
+	global $USER;
+	
+	if(!isset($_REQUEST['post']))
+		return ['code' => 400, 'error' => STR_EMPTY_DATA];
+	
+	if(!can_user('create_post'))
+		return ['code' => 403, 'error' => STR_ACTION_BIO_1];
+	
+	$post = new rad_post();
+	$post->load_from_db($_REQUEST['post']);
+	
+	if($post->id == 0)
+		return ['code' => 400, 'error' => STR_ACTION_POST_1];
+	
+	$post->set_bug($USER->get_id());
+	return ['bugs' => $post->bugs, 'features' => $post->features];
+}
+
+function action_feature(){
+	global $USER;
+	
+	if(!isset($_REQUEST['post']))
+		return ['code' => 400, 'error' => STR_EMPTY_DATA];
+	
+	if(!can_user('create_post'))
+		return ['code' => 403, 'error' => STR_ACTION_BIO_1];
+	
+	$post = new rad_post();
+	$post->load_from_db($_REQUEST['post']);
+	
+	if($post->id == 0)
+		return ['code' => 400, 'error' => STR_ACTION_POST_1];
+	
+	$post->set_feature($USER->get_id());
+	return ['bugs' => $post->bugs, 'features' => $post->features];
+}
