@@ -5,26 +5,7 @@
  * создает пост от лица текущего пользователя, если он может create_post
  * @param $_POST = ['lang' => str, 'feat' => int|null, 'text' => string, tags => string[]]
  * @return array
- * [
- *  'id' => int,
- *  'author' => [
- *      'user' => int, //user_id
- *      'avatar' => string,
- *      'nickname' => string, //login
- *  ],
- *  'parent' => null|[
- *      'post' => int, //parent post id
- *      'user' => int, //parent post author id
- *      'nickname' => string, //parent post author login
- *  ],
- *  'data' => [
- *      'lang' => string,
- *      'text' => string,
- *      'bugs' => int,
- *      'features' => int,
- *      'forks' => int,
- *  ]
- * ]
+ * @see action_post()
  * ['code' => 400, 'error' => string]
  * ['code' => 403, 'error' => string]
  */
@@ -62,6 +43,16 @@ function action_publish(){
 	return $ret;
 }
 
+
+/**
+ * возврщает список постов указанного пользователя (или все) начиная с переданного id (не включая), от самого свежего поста до старого
+ * @param $_REQUEST = ['user' => null|int, 'anchor' => int|null]
+ * @return array
+ * [
+ *  массив постов
+ * ]
+ * @see action_post()
+ */
 function action_posts(){
 	global $USER, $DB;
 	
@@ -98,4 +89,59 @@ function action_posts(){
 	}
 	
 	return $posts;
+}
+
+/**
+ * возврщает пост по указанному id
+ * @param $_REQUEST = ['id' => int]
+ * @return array
+ * [
+ *  'id' => int,
+ *  'author' => [
+ *      'user' => int, //user_id
+ *      'avatar' => string,
+ *      'nickname' => string, //login
+ *  ],
+ *  'mark' => int, // -1 dislike, 0 - undefined, 1 - like
+ *  'parent' => null|[
+ *      'post' => int, //parent post id
+ *      'user' => int, //parent post author id
+ *      'nickname' => string, //parent post author login
+ *  ],
+ *  'data' => [
+ *      'lang' => string,
+ *      'text' => string,
+ *      'bugs' => int,
+ *      'features' => int,
+ *      'forks' => int,
+ *  ]
+ * ]
+ * ['code' => 400, 'error' => string]
+ */
+function action_post(){
+	global $USER;
+	
+	if(!isset($_REQUEST['id']))
+		return ['code' => 400, 'error' => STR_EMPTY_DATA];
+	
+	$post = new rad_post();
+	$post->load_all_from_db($_REQUEST['id']);
+	if($post->id == 0)
+		return ['code' => 400, 'error' => STR_ACTION_POST_1];
+	
+	$ret = [
+		'id' => $post->id,
+		'author' => $post->author_data,
+		'parent' => empty($post->parent_data['post']) ? null : $post->parent_data,
+		'mark' => $post->get_user_mark($USER->get_id()),
+		'data' => [
+			'lang' => $post->lang,
+			'text' => $post->text,
+			'bugs' => $post->bugs,
+			'features' => $post->features,
+			'forks' => $post->forks,
+		]
+	];
+	
+	return $ret;
 }
