@@ -54,6 +54,7 @@ require_once MAIN_DIR.'includes/classes/post-class.php';
 //header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Origin: http://localhost:3000');
+header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, sid');
 require_once MAIN_DIR.'includes/actions/actions.php';
 
 $ret = do_actions();
